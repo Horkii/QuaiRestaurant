@@ -1,10 +1,18 @@
-services:
-  app:
+applications:
+  symfony:
     type: php:8.1
-  mysql:
-    type: mysql:8.0
+    source:
+      root: .
+    relationships:
+      mariadb:
+        service: mariadb
+        endpoint: mysql
+
+services:
+  mariadb:
+    type: mariadb:11.8
 
 routes:
-  "https://{default}":
+  "https://{default}/":
     type: upstream
-    upstream: app:http
+    upstream: symfony:http
