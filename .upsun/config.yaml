@@ -4,13 +4,13 @@ applications:
     source:
       root: public
     relationships:
-      mysql:
-        service: mysql
+      mariadb:
+        service: mariadb
         endpoint: mysql
 
 services:
-  mysql:
-    type: "mysql:8.0"
+  mariadb:
+    type: "mariadb:11.8"
 
 routes:
   "https://{default}/":
