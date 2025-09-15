@@ -1,10 +1,8 @@
 services:
   app:
-    type: php
-    version: "8.1"
+    type: php-8.1
   mysql:
-    type: mysql
-    version: "8.0"
+    type: mysql-8.0
 
 routes:
   "https://{default}":
