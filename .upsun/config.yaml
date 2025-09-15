@@ -2,15 +2,15 @@ applications:
   symfony:
     type: "php:8.1"
     source:
-      root: .
+      root: public
     relationships:
-      mariadb:
-        service: mariadb
+      mysql:
+        service: mysql
         endpoint: mysql
 
 services:
-  mariadb:
-    type: mariadb:11.8
+  mysql:
+    type: "mysql:8.0"
 
 routes:
   "https://{default}/":
