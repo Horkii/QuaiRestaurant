@@ -1,15 +1,9 @@
-# Définition des services utilisés par le projet
 services:
   app:
-    type: php:8.1-fpm
-    disk: 1024
-    commands:
-      start: "php-fpm"
+    image: "php:8.1-apache"
   mysql:
-    type: mysql:10.4
+    image: "mysql:8.0"
 
-# Définition des routes HTTP exposées par l’application
 routes:
-  "/":
-    type: upstream
-    upstream: "app:http"
+  "https://{default}":
+    service: app
