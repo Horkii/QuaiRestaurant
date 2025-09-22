@@ -1,34 +1,26 @@
-# Dockerfile
+# Étape 1 : Utilisation de l'image PHP de base
+FROM php:8.3-fpm
 
-FROM php:8.3-apache
-
-# Installer les extensions nécessaires
+# Étape 2 : Installation des dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
-    git unzip zip libicu-dev libonig-dev libxml2-dev libzip-dev \
-    && docker-php-ext-install intl pdo pdo_mysql zip \
-    && a2enmod rewrite \
-    && rm -rf /var/lib/apt/lists/*
+    libicu-dev \
+    libxml2-dev \
+    unzip \
+    git \
+    && docker-php-ext-install intl xml pdo pdo_mysql
 
-# Définir le répertoire de travail
+# Étape 3 : Installation de Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Étape 4 : Copie des fichiers du projet dans le conteneur
 WORKDIR /var/www/html
-
-# Copier les fichiers dans le conteneur
 COPY . .
 
-# Ajouter /var/www/html comme "safe directory" pour Git (composer)
-RUN git config --global --add safe.directory /var/www/html
+# Étape 5 : Installation des dépendances PHP via Composer
+RUN composer install --no-dev --optimize-autoloader
 
-# Installer Composer depuis l'image officielle
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Étape 6 : Exposition du port 8000
+EXPOSE 8000
 
-# Installer les dépendances PHP
-RUN composer install --no-interaction --optimize-autoloader
-
-# Copier la configuration Apache
-COPY docker/vhost.conf /etc/apache2/sites-available/000-default.conf
-
-# Fixer les permissions
-RUN chown -R www-data:www-data var
-
-# Exposer le port 80
-EXPOSE 80
+# Étape 7 : Lancement de Symfony
+CMD ["php", "bin/console", "server:run", "0.0.0.0:8000"]
