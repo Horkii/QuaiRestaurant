@@ -1,26 +1,31 @@
-# Étape 1 : Utilisation de l'image PHP de base
+# Utiliser l'image PHP officielle avec FPM
 FROM php:8.3-fpm
 
-# Étape 2 : Installation des dépendances système nécessaires
+# Installer les dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    libxml2-dev \
-    unzip \
     git \
-    && docker-php-ext-install intl xml pdo pdo_mysql
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install zip
 
-# Étape 3 : Installation de Composer
+# Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Étape 4 : Copie des fichiers du projet dans le conteneur
+# Créer un utilisateur non-root pour exécuter l'application
+RUN useradd -ms /bin/bash symfonyuser
+USER symfonyuser
+
+# Définir le répertoire de travail
 WORKDIR /var/www/html
-COPY . .
 
-# Étape 5 : Installation des dépendances PHP via Composer
-RUN composer install --no-dev --optimize-autoloader
+# Copier tous les fichiers de ton projet dans le conteneur Docker
+COPY . /var/www/html
 
-# Étape 6 : Exposition du port 8000
+# Installer les dépendances via Composer sans exécuter les scripts Symfony
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Exposer le port 8000 pour l'application
 EXPOSE 8000
 
-# Étape 7 : Lancement de Symfony
-CMD ["php", "bin/console", "server:run", "0.0.0.0:8000"]
+# Commande pour démarrer l'application PHP en mode serveur web interne
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
