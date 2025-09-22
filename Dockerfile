@@ -21,8 +21,8 @@ WORKDIR /var/www/html
 # Copier tous les fichiers de ton projet dans le conteneur Docker
 COPY . /var/www/html
 
-# Installer les dépendances via Composer sans exécuter les scripts Symfony
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Installer les dépendances via Composer sans exécuter les scripts Symfony et sans plugins
+RUN composer install --no-dev --optimize-autoloader --no-plugins --no-scripts
 
 # Exposer le port 8000 pour l'application
 EXPOSE 8000
